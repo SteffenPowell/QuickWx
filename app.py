@@ -90,7 +90,7 @@ def get_taf_summary(station_id):
         pass
     return "TAF data unavailable."
 
-# 🌤️ Model forecast from Open-Meteo, MOS, NDFD
+# 🌤️ Model forecast from Open-Meteo and NDFD
 def get_model_forecast(lat, lon, target_time, station_id=None):
     results = {}
 
@@ -170,14 +170,12 @@ def home():
         takeoff_str = request.form["takeoff"]
         takeoff = parse_zulu_time(takeoff_str)
 
-        # 🛫 Departure Briefing
         lat, lon, elevation_ft = get_lat_lon_from_station(station)
         if lat and lon:
             route_coords.append((lat, lon, f"Takeoff: {station}"))
-
-        metar = get_metar(station)
-        taf = get_taf_summary(station)
-        model_data = get_model_forecast(lat, lon, takeoff, station)
+            metar = get_metar(station)
+            taf = get_taf_summary(station)
+            model_data = get_model_forecast(lat, lon, takeoff, station)
 
         temp_c = metar.get("Temperature")
         altimeter = metar.get("Altimeter")
@@ -277,33 +275,6 @@ def home():
                 output += '<br><span class="default">🧮 Altitude Calculations:</span><br>'
                 output += f'<span class="default">  Pressure Altitude: {pressure_alt} ft</span><br>'
                 output += f'<span class="default">  Density Altitude: {density_alt} ft</span><br>'
-
-app = Flask(__name__)
-
-@app.route("/", methods=["GET", "POST"])
-def home():
-    output = ""
-    route_coords = []
-
-    if request.method == "POST":
-        station = request.form.get("station")
-        takeoff = request.form.get("takeoff")
-
-        output += f'<span class="takeoff">🚀 Departure Station: {station}</span><br>'
-        output += f'<span class="takeoff">🕒 Takeoff Time: {takeoff}</span><br><br>'
-
-        for i in range(1, 4):
-            dest_station = request.form.get(f"dest{i}_station")
-            dest_time = request.form.get(f"dest{i}_time")
-
-            if dest_station and dest_time:
-                output += f'<span class="arrival">📍 Destination {i}: {dest_station} at {dest_time}</span><br>'
-                lat = 30.0 + i  # placeholder
-                lon = -90.0 + i  # placeholder
-                label = f"{dest_station} ({dest_time})"
-                route_coords.append([lat, lon, label])
-
-        route_coords.insert(0, [29.0, -91.0, f"{station} (Takeoff)"])
 
         return render_template("briefing.html", output=output, route_coords=route_coords)
 
