@@ -102,6 +102,10 @@
         const routeCoords = JSON.parse(document.getElementById("route-data").textContent);
         const latlngs = [];
 
+        if (routeCoords.length === 0) {
+            document.getElementById("output").innerHTML += "<br><span class='default'>⚠️ No route data available.</span>";
+        }
+
         routeCoords.forEach(function(coord) {
             const lat = coord[0];
             const lon = coord[1];
