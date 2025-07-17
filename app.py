@@ -286,20 +286,30 @@ def home():
     route_coords = []
 
     if request.method == "POST":
-        # Example placeholder logic — replace with your real calculations
-        pressure_alt = request.form.get("pressure_alt")
-        density_alt = request.form.get("density_alt")
+        # Get departure info
+        station = request.form.get("station")
+        takeoff = request.form.get("takeoff")
 
-        if pressure_alt and density_alt:
-            output += '<br><span class="default">🧮 Altitude Calculations:</span><br>'
-            output += f'<span class="default">  Pressure Altitude: {pressure_alt} ft</span><br>'
-            output += f'<span class="default">  Density Altitude: {density_alt} ft</span><br>'
+        output += f'<span class="takeoff">🚀 Departure Station: {station}</span><br>'
+        output += f'<span class="takeoff">🕒 Takeoff Time: {takeoff}</span><br><br>'
 
-        # You can also populate route_coords here if needed
+        # Get destinations
+        for i in range(1, 4):
+            dest_station = request.form.get(f"dest{i}_station")
+            dest_time = request.form.get(f"dest{i}_time")
+
+            if dest_station and dest_time:
+                output += f'<span class="arrival">📍 Destination {i}: {dest_station} at {dest_time}</span><br>'
+
+                # Mock coordinates for now — replace with real lookup later
+                lat = 30.0 + i  # placeholder
+                lon = -90.0 + i  # placeholder
+                label = f"{dest_station} ({dest_time})"
+                route_coords.append([lat, lon, label])
+
+        # Add mock departure coordinates
+        route_coords.insert(0, [29.0, -91.0, f"{station} (Takeoff)"])
 
         return render_template("briefing.html", output=output, route_coords=route_coords)
 
     return render_template("index.html")
-
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000)
