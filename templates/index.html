@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>QuickWx Web Briefing</title>
+    <meta charset="utf-8">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        .dark {
+            background-color: #1E1E1E;
+            color: #FFFFFF;
+        }
+        .light {
+            background-color: #F4F4F4;
+            color: #000000;
+        }
+        h2 {
+            color: inherit;
+        }
+        label {
+            font-weight: bold;
+        }
+        input {
+            padding: 5px;
+            margin: 5px;
+            width: 180px;
+        }
+        .destination-group {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: rgba(0, 123, 255, 0.1);
+            border-radius: 8px;
+        }
+        .destination-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .destination-row label {
+            margin-right: 10px;
+            width: 150px;
+        }
+        button[type="submit"] {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #0077cc;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        button[type="submit"]:hover {
+            background-color: #005fa3;
+        }
+        #theme-toggle {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            padding: 8px 12px;
+            font-weight: bold;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .dark #theme-toggle {
+            background-color: #444;
+            color: #fff;
+        }
+        .light #theme-toggle {
+            background-color: #ddd;
+            color: #000;
+        }
+    </style>
+</head>
+<body class="dark">
+    <button id="theme-toggle">Toggle Theme</button>
+
+    <h2>QuickWx Briefing</h2>
+    <form method="POST">
+        <label>Departure Station ID:</label><br>
+        <input name="station" required><br><br>
+
+        <label>Takeoff Time (e.g. 1430Z):</label><br>
+        <input name="takeoff" required><br><br>
+
+        <div class="destination-group">
+            <h3>Destinations</h3>
+
+            <div class="destination-row">
+                <label>Destination 1:</label>
+                <input name="dest1_station" placeholder="Station ID">
+                <input name="dest1_time" placeholder="Time (e.g. 1600Z)">
+            </div>
+
+            <div class="destination-row">
+                <label>Destination 2:</label>
+                <input name="dest2_station" placeholder="Station ID">
+                <input name="dest2_time" placeholder="Time (e.g. 1730Z)">
+            </div>
+
+            <div class="destination-row">
+                <label>Destination 3:</label>
+                <input name="dest3_station" placeholder="Station ID">
+                <input name="dest3_time" placeholder="Time (e.g. 1900Z)">
+            </div>
+        </div>
+
+        <button type="submit">Get Briefing</button>
+    </form>
+
+    <script>
+        const toggleBtn = document.getElementById("theme-toggle");
+        const body = document.body;
+
+        toggleBtn.addEventListener("click", () => {
+            body.classList.toggle("dark");
+            body.classList.toggle("light");
+        });
+    </script>
+</body>
+</html>

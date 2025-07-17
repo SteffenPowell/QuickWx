@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>QuickWx</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        body {
+            font-family: Consolas, monospace;
+            margin: 0;
+            padding: 0;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        .dark {
+            background-color: #1E1E1E;
+            color: #FFFFFF;
+        }
+        .light {
+            background-color: #F4F4F4;
+            color: #000000;
+        }
+        h2 {
+            padding: 20px;
+        }
+        #output {
+            white-space: pre-wrap;
+            padding: 20px;
+            font-weight: bold;
+        }
+        .metar { color: #00BFFF; }
+        .takeoff { color: #32CD32; }
+        .arrival { color: #1FCC00; }
+        .default { color: inherit; }
+        #map {
+            height: 600px;
+            width: 100%;
+        }
+        .back-link {
+            display: block;
+            padding: 20px;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .back-link:hover {
+            text-decoration: underline;
+        }
+        #theme-toggle {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            padding: 8px 12px;
+            font-weight: bold;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .dark #theme-toggle {
+            background-color: #444;
+            color: #fff;
+        }
+        .light #theme-toggle {
+            background-color: #ddd;
+            color: #000;
+        }
+    </style>
+</head>
+<body class="dark">
+    <button id="theme-toggle">Toggle Theme</button>
+    <h2>QuickWx Briefing</h2>
+
+    <div id="output">{{ output|safe }}</div>
+
+    <div id="map"></div>
+
+    <a href="/" class="back-link">🔙 Back</a>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <!-- Route data injection -->
+    <script id="route-data" type="application/json">
+        {{ route_coords | tojson }}
+    </script>
+
+    <script>
+        // Theme toggling
+        const toggleBtn = document.getElementById("theme-toggle");
+        const body = document.body;
+
+        toggleBtn.addEventListener("click", () => {
+            body.classList.toggle("dark");
+            body.classList.toggle("light");
+        });
+
+        // Leaflet map
+        const map = L.map('map').setView([39.5, -98.35], 4);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 10,
+            attribution: '© OpenStreetMap'
+        }).addTo(map);
+
+        const routeCoords = JSON.parse(document.getElementById("route-data").textContent);
+        const latlngs = [];
+
+        routeCoords.forEach(function(coord) {
+            const lat = coord[0];
+            const lon = coord[1];
+            const label = coord[2];
+            L.marker([lat, lon]).addTo(map).bindPopup(label);
+            latlngs.push([lat, lon]);
+        });
+
+        if (latlngs.length > 1) {
+            L.polyline(latlngs, { color: 'lime' }).addTo(map);
+            map.fitBounds(latlngs);
+        }
+    </script>
+</body>
+</html>
