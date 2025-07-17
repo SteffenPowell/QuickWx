@@ -278,11 +278,28 @@ def home():
                 output += f'<span class="default">  Pressure Altitude: {pressure_alt} ft</span><br>'
                 output += f'<span class="default">  Density Altitude: {density_alt} ft</span><br>'
 
+app = Flask(__name__)
+
+@app.route("/", methods=["GET", "POST"])
+def home():
+    output = ""
+    route_coords = []
+
+    if request.method == "POST":
+        # Example placeholder logic — replace with your real calculations
+        pressure_alt = request.form.get("pressure_alt")
+        density_alt = request.form.get("density_alt")
+
+        if pressure_alt and density_alt:
+            output += '<br><span class="default">🧮 Altitude Calculations:</span><br>'
+            output += f'<span class="default">  Pressure Altitude: {pressure_alt} ft</span><br>'
+            output += f'<span class="default">  Density Altitude: {density_alt} ft</span><br>'
+
+        # You can also populate route_coords here if needed
+
         return render_template("briefing.html", output=output, route_coords=route_coords)
 
     return render_template("index.html")
 
-    return render_template("index.html")
-
-    if __name__ == "__main__":
-        app.run(host="0.0.0.0", port=5000)
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000)
