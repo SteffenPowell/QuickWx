@@ -292,7 +292,7 @@ def home():
 
         output += '<br><br><span class="default">📊 Vertical Profile (Winds & Temps):</span><br>'
         output += '<table border="1" cellpadding="5" cellspacing="0">'
-        output += '<tr><th>Flight Level</th><th>Wind</th><th>Temperature</th></tr>'
+        output += '<tr><th>Flight Level</th><th>Wind</th><th>Temperature</th><th>Source</th></tr>'
 
         profile_levels = [10, 50, 100, 180, 240, 300, 340, 390]
         for fl in profile_levels:
@@ -301,7 +301,8 @@ def home():
             source = next(iter(winds_data))
             wind = winds_data[source].get("Wind", "N/A")
             temp = winds_data[source].get("Temperature", "N/A")
-            output += f'<tr><td>FL{fl:03d}</td><td>{wind}</td><td>{temp}</td></tr>'
+            output += f'<tr><td>FL{fl:03d}</td><td>{wind}</td><td>{temp}</td><td>{source}</td></tr>'
+            output += f'<span class="default">DEBUG FL{fl:03d}: alt_m={alt_m}, source={source}, wind={wind}, temp={temp}</span><br>'
 
         output += '</table>'
 
