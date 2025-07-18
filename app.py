@@ -349,18 +349,33 @@ def home():
 
             output += f'<br><span class="arrival">📍 Destination {i}: {dest_station} at {dest_time.strftime("%Y-%m-%d %H:%MZ")}</span><br>'
 
-            output += '<span class="metar">📘 METAR Observations:</span><br>'
+            output += (
+                '<div class="section">'
+                '<div class="section-header" onclick="toggleSection(this)">📘 METAR Observations</div>'
+                '<div class="section-content" style="display:none;">'
+            )
             for k, v in metar.items():
                 output += f'<span class="metar">  {k}: {v}</span><br>'
+            output += '</div></div>'
 
-            output += '<br><span class="taf">📗 Terminal Forecast (TAF):</span><br>'
+            output += (
+                '<div class="section">'
+                '<div class="section-header" onclick="toggleSection(this)">📗 Terminal Forecast (TAF)</div>'
+                '<div class="section-content" style="display:none;">'
+            )
             output += f'<span class="taf">{taf}</span><br>'
+            output += '</div></div>'
 
-            output += '<br><span class="model">📙 Model Forecast at Arrival Time:</span><br>'
+            output += (
+                '<div class="section">'
+                '<div class="section-header" onclick="toggleSection(this)">📙 Model Forecast at Arrival Time</div>'
+                '<div class="section-content" style="display:none;">'
+            )
             for source, forecast in model_data.items():
-                output += f'<br><span class="model">📘 {source}:</span><br>'
+                output += f'<span class="model">📘 {source}:</span><br>'
                 for k, v in forecast.items():
                     output += f'<span class="model">  {k}: {v}</span><br>'
+            output += '</div></div>'
 
             if pressure_alt and density_alt:
                 output += '<br><span class="default">🧮 Altitude Calculations:</span><br>'
