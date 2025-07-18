@@ -29,16 +29,41 @@
         }
 
         /* 🔹 Section Styling */
+        .section {
+            margin-bottom: 20px;
+        }
+        .section-header {
+            background-color: #444;
+            color: #fff;
+            padding: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            border-radius: 5px;
+        }
+        .section-content {
+            padding: 10px;
+            display: none;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .dark .section-header {
+            background-color: #333;
+        }
+        .light .section-header {
+            background-color: #ddd;
+            color: #000;
+        }
+
         .metar {
             color: #00BFFF;
             font-weight: bold;
         }
         .taf {
-            color: #fbff00;
+            color: #d0ff00;
             font-weight: bold;
         }
         .model {
-            color: #00ff00;
+            color: #1eff00;
             font-weight: bold;
         }
 
@@ -120,6 +145,12 @@
             body.classList.toggle("dark");
             body.classList.toggle("light");
         });
+
+        // Collapsible section toggle
+        function toggleSection(header) {
+            const content = header.nextElementSibling;
+            content.style.display = (content.style.display === "none" || content.style.display === "") ? "block" : "none";
+        }
 
         // Leaflet map
         const map = L.map('map').setView([39.5, -98.35], 4);
