@@ -333,6 +333,23 @@ def home():
                     output += f'<span class="default">📘 {source}:</span><br>'
                     for k, v in data.items():
                         output += f'<span class="default">  {k}: {v}</span><br>'
+                        output += '<br><br><span class="default">📊 Vertical Profile (Winds & Temps):</span><br>'
+                        output += '<table border="1" cellpadding="5" cellspacing="0">'
+                        output += '<tr><th>Flight Level</th><th>Wind</th><th>Temperature</th></tr>'
+
+                        profile_levels = [10, 50, 100, 180, 240, 300, 340, 390]
+
+                        for fl in profile_levels:
+                            alt_m = round(fl * 100 * 0.3048)
+                            winds_data = get_winds_at_altitude(lat, lon, alt_m, takeoff)
+
+                            source = next(iter(winds_data))
+                            wind = winds_data[source].get("Wind", "N/A")
+                            temp = winds_data[source].get("Temperature", "N/A")
+
+                            output += f'<tr><td>FL{fl:03d}</td><td>{wind}</td><td>{temp}</td></tr>'
+
+                        output += '</table>'
 
 
         return render_template("briefing.html", output=output, route_coords=route_coords)
