@@ -217,7 +217,7 @@ def home():
             try:
                 flight_level = int(flight_level_str[2:])
                 alt_m = round(flight_level * 100 * 0.3048)
-            except: 
+            except:
                 output += f'<br><span class="default">⚠️ Invalid flight level format: {flight_level_str}</span><br>'
 
         lat, lon, elevation_ft = get_lat_lon_from_station(station)
@@ -248,23 +248,46 @@ def home():
         output += f'<span class="takeoff">📍 Departure Station: {station}</span><br>'
         output += f'<span class="takeoff">🕒 Takeoff: {takeoff.strftime("%Y-%m-%d %H:%MZ")}</span><br><br>'
 
-        output += '<span class="metar">📡 METAR Conditions:</span><br>'
+        output += '<span class="metar">📘 METAR Observations:</span><br>'
         for k, v in metar.items():
             output += f'<span class="metar">  {k}: {v}</span><br>'
 
-        output += '<br><span class="default">📝 TAF Forecast:</span><br>'
-        output += f'<span class="default">{taf}</span><br>'
+        output += '<br><span class="taf">📗 Terminal Forecast (TAF):</span><br>'
+        output += f'<span class="taf">{taf}</span><br>'
 
-        output += '<br><span class="default">🔮 Forecast at Takeoff Time (Model Data):</span><br>'
+        output += '<br><span class="model">📙 Model Forecast at Takeoff Time:</span><br>'
         for source, forecast in model_data.items():
-            output += f'<br><span class="default">📘 {source}:</span><br>'
+            output += f'<br><span class="model">📘 {source}:</span><br>'
             for k, v in forecast.items():
-                output += f'<span class="default">  {k}: {v}</span><br>'
+                output += f'<span class="model">  {k}: {v}</span><br>'
 
         if pressure_alt and density_alt:
             output += '<br><span class="default">🧮 Altitude Calculations:</span><br>'
             output += f'<span class="default">  Pressure Altitude: {pressure_alt} ft</span><br>'
             output += f'<span class="default">  Density Altitude: {density_alt} ft</span><br>'
+
+        output += f'<br><span class="default">🛫 Winds & Temps at {flight_level_str}:</span><br>'
+        if alt_m and lat and lon:
+            winds_data = get_winds_at_altitude(lat, lon, alt_m, takeoff)
+            for source, data in winds_data.items():
+                output += f'<span class="default">📘 {source}:</span><br>'
+                for k, v in data.items():
+                    output += f'<span class="default">  {k}: {v}</span><br>'
+
+        output += '<br><br><span class="default">📊 Vertical Profile (Winds & Temps):</span><br>'
+        output += '<table border="1" cellpadding="5" cellspacing="0">'
+        output += '<tr><th>Flight Level</th><th>Wind</th><th>Temperature</th></tr>'
+
+        profile_levels = [10, 50, 100, 180, 240, 300, 340, 390]
+        for fl in profile_levels:
+            alt_m = round(fl * 100 * 0.3048)
+            winds_data = get_winds_at_altitude(lat, lon, alt_m, takeoff)
+            source = next(iter(winds_data))
+            wind = winds_data[source].get("Wind", "N/A")
+            temp = winds_data[source].get("Temperature", "N/A")
+            output += f'<tr><td>FL{fl:03d}</td><td>{wind}</td><td>{temp}</td></tr>'
+
+        output += '</table>'
 
         # ✈️ Destination Briefings
         output += '<br><br><span class="arrival">✈️ Destination Briefings:</span><br>'
@@ -308,18 +331,19 @@ def home():
             pressure_alt, density_alt = calculate_altitudes(elevation_ft, altimeter, temp_c)
 
             output += f'<br><span class="arrival">📍 Destination {i}: {dest_station} at {dest_time.strftime("%Y-%m-%d %H:%MZ")}</span><br>'
-            output += '<span class="metar">📡 METAR Conditions:</span><br>'
+
+            output += '<span class="metar">📘 METAR Observations:</span><br>'
             for k, v in metar.items():
                 output += f'<span class="metar">  {k}: {v}</span><br>'
 
-            output += '<br><span class="default">📝 TAF Forecast:</span><br>'
-            output += f'<span class="default">{taf}</span><br>'
+            output += '<br><span class="taf">📗 Terminal Forecast (TAF):</span><br>'
+            output += f'<span class="taf">{taf}</span><br>'
 
-            output += '<br><span class="default">🔮 Forecast at Arrival Time (Model Data):</span><br>'
+            output += '<br><span class="model">📙 Model Forecast at Arrival Time:</span><br>'
             for source, forecast in model_data.items():
-                output += f'<br><span class="default">📘 {source}:</span><br>'
+                output += f'<br><span class="model">📘 {source}:</span><br>'
                 for k, v in forecast.items():
-                    output += f'<span class="default">  {k}: {v}</span><br>'
+                    output += f'<span class="model">  {k}: {v}</span><br>'
 
             if pressure_alt and density_alt:
                 output += '<br><span class="default">🧮 Altitude Calculations:</span><br>'
@@ -338,11 +362,9 @@ def home():
                 output += '<table border="1" cellpadding="5" cellspacing="0">'
                 output += '<tr><th>Flight Level</th><th>Wind</th><th>Temperature</th></tr>'
 
-                profile_levels = [10, 50, 100, 180, 240, 300, 340, 390]
-
                 for fl in profile_levels:
                     alt_m = round(fl * 100 * 0.3048)
-                    winds_data = get_winds_at_altitude(lat, lon, alt_m, takeoff)
+                    winds_data = get_winds_at_altitude(lat, lon, alt_m, dest_time)
 
                     source = next(iter(winds_data))
                     wind = winds_data[source].get("Wind", "N/A")
@@ -352,10 +374,10 @@ def home():
 
                 output += '</table>'
 
-
         return render_template("briefing.html", output=output, route_coords=route_coords)
 
     return render_template("index.html")
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
+
