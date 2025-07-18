@@ -213,12 +213,12 @@ def home():
         flight_level = None
         alt_m = None
 
-    if flight_level_str.startswith("FL"):
-        try:
-            flight_level = int(flight_level_str[2:])
-            alt_m = round(flight_level * 100 * 0.3048)
-        except: 
-            output += f'<br><span class="default">⚠️ Invalid flight level format: {flight_level_str}</span><br>'
+        if flight_level_str.startswith("FL"):
+            try:
+                flight_level = int(flight_level_str[2:])
+                alt_m = round(flight_level * 100 * 0.3048)
+            except: 
+                output += f'<br><span class="default">⚠️ Invalid flight level format: {flight_level_str}</span><br>'
 
         lat, lon, elevation_ft = get_lat_lon_from_station(station)
         if lat and lon:
